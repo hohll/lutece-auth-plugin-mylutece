@@ -78,7 +78,7 @@ public class MyluteceMarkupRenderTest
 
     /** The core macros the templates call, written as stand-ins: nested content only, or an element with the argument. */
     private static final String [ ] MACROS_NESTED = {
-            "cTpl", "cRow", "cCol", "cForm", "cCard", "cField", "cBtn", "cIcon", "cLink", "cImg", "cInputGroup",
+            "cTpl", "cRow", "cCol", "cForm", "cCard", "cField", "cBtn", "cIcon", "cImg", "cInputGroup",
             "cInputGroupAddon", "cInputPassword", "cText", "cInline", "cContainer", "cTitle", "cBreadCrumb", "chList", "chItem",
             "cDropdown"
     };
@@ -87,6 +87,7 @@ public class MyluteceMarkupRenderTest
             + "<#macro cBlock rest...><div><#nested></div></#macro>" + "<#macro cInput value='' rest...><input value=\"${value}\"></#macro>"
             + "<#macro formGroup labelKey='' rest...><div class=\"form-group\"><label>${labelKey}</label><#nested></div></#macro>"
             + "<#macro input value='' rest...><input value=\"${value}\"></#macro>"
+            + "<#macro cLink href='' rest...><a href=\"${href}\"><#nested></a></#macro>"
             + "<#macro cRadio name label value='' checked=false rest...><input type=\"radio\" name=\"${name}\" value=\"${value}\"<#if checked> checked</#if>>${label}</#macro>"
             + "<#macro cFieldset legend='' errorMsg='' rest...><fieldset<#if errorMsg?has_content> aria-describedby=\"error_group\"</#if>><legend>${legend}</legend>"
             + "<#if errorMsg?has_content><div id=\"error_group\">${errorMsg}</div></#if><#nested></fieldset></#macro>";
@@ -226,7 +227,8 @@ public class MyluteceMarkupRenderTest
     private static List<Map<String, Object>> databaseAndDelegatedAuthentications( )
     {
         return List.of( Map.of( "name", "mylutece-database", "authServiceName", "Database", "externalAuthentication", false,
-                "delegatedAuthentication", false ), Map.of( "name", "mylutece-openid", "authServiceName", "OpenID Connect", "externalAuthentication",
+                "delegatedAuthentication", false, "lostPasswordPageUrl", "jsp/site/Portal.jsp?page=mylutecedatabase&view=lostPassword",
+                "lostLoginPageUrl", "jsp/site/Portal.jsp?page=mylutecedatabase&view=lostLogin" ), Map.of( "name", "mylutece-openid", "authServiceName", "OpenID Connect", "externalAuthentication",
                 false, "delegatedAuthentication", true, "iconUrl", "images/openid.png" ) );
     }
 
@@ -289,6 +291,45 @@ public class MyluteceMarkupRenderTest
 
         assertTrue( strHtml.contains( "<fieldset aria-describedby=\"error_group\"><legend>#i18n{mylutece.xpage.login_form.labelAuthProvider}</legend>"
                 + "<div id=\"error_group\">#i18n{mylutece.message.noAuthenticationSelected}</div>" ), strHtml );
+    }
+
+    /**
+     * The lost password and lost login links of the multi-authentication form point to the pages of the login/password
+     * authentication.
+     *
+     * @throws Exception
+     *             if the rendering fails
+     */
+    @Test
+    public void testMultiLoginFormLinksTheLostPasswordAndLostLoginPages( ) throws Exception
+    {
+        Map<String, Object> model = loginModel( );
+        model.put( "list_authentications", databaseAndDelegatedAuthentications( ) );
+
+        String strHtml = render( TEMPLATE_LOGIN_FORM_MULTI, model );
+
+        assertTrue( strHtml.contains( "<a href=\"jsp/site/Portal.jsp?page=mylutecedatabase&amp;view=lostPassword\">" ), strHtml );
+        assertTrue( strHtml.contains( "<a href=\"jsp/site/Portal.jsp?page=mylutecedatabase&amp;view=lostLogin\">" ), strHtml );
+        assertFalse( strHtml.contains( "<a href=\"\">" ), strHtml );
+    }
+
+    /**
+     * Without lost password nor lost login page, the multi-authentication form writes no link with an empty URL.
+     *
+     * @throws Exception
+     *             if the rendering fails
+     */
+    @Test
+    public void testMultiLoginFormWritesNoEmptyLostLink( ) throws Exception
+    {
+        Map<String, Object> model = loginModel( );
+        model.put( "list_authentications", List.of( Map.of( "name", "mylutece-database", "authServiceName", "Database", "externalAuthentication",
+                false, "delegatedAuthentication", false ), Map.of( "name", "mylutece-other", "authServiceName", "Other", "externalAuthentication",
+                false, "delegatedAuthentication", false ) ) );
+
+        String strHtml = render( TEMPLATE_LOGIN_FORM_MULTI, model );
+
+        assertFalse( strHtml.contains( "<a href=\"\">" ), strHtml );
     }
 
     /**

@@ -43,6 +43,11 @@
           <#list internalAuthentications as authentication>
             <#if auth_provider?has_content && auth_provider == authentication.name><#assign checkedProvider = authentication.name /></#if>
           </#list>
+          <#-- the lost password and lost login pages of the checked provider -->
+          <#list internalAuthentications?filter( a -> a.name == checkedProvider ) as authentication>
+            <#assign lostPasswordUrl = authentication.lostPasswordPageUrl!'' />
+            <#assign lostLoginUrl = authentication.lostLoginPageUrl!'' />
+          </#list>
           <#-- a login refused without provider: the error is written on the radio group -->
           <@cFieldset legend='#i18n{mylutece.xpage.login_form.labelAuthProvider}' errorMsg=( hasLoginError && !auth_provider?has_content )?then( '#i18n{mylutece.message.noAuthenticationSelected}', '' )>
           <#list internalAuthentications as authentication>
@@ -75,8 +80,8 @@
           <@cIcon name='arrow-right' class='ms-2' />
         </@cBtn>
         <@cBlock class='lost-row'>
-          <#if lostPasswordUrl??><@cLink href='${lostPasswordUrl!}' label='#i18n{mylutece.xpage.login_form.labelButtonLostPassword}' title="#i18n{mylutece.xpage.login_form.labelButtonLostPassword}" /></#if>
-          <#if lostLoginUrl??><@cLink href='${lostLoginUrl!}' label='#i18n{mylutece.xpage.login_form.labelButtonLostLogin}' title="#i18n{mylutece.xpage.login_form.labelButtonLostLogin}" /></#if>
+          <#if lostPasswordUrl?has_content><@cLink href='${lostPasswordUrl}' label='#i18n{mylutece.xpage.login_form.labelButtonLostPassword}' title="#i18n{mylutece.xpage.login_form.labelButtonLostPassword}" /></#if>
+          <#if lostLoginUrl?has_content><@cLink href='${lostLoginUrl}' label='#i18n{mylutece.xpage.login_form.labelButtonLostLogin}' title="#i18n{mylutece.xpage.login_form.labelButtonLostLogin}" /></#if>
         </@cBlock>
       </#if>
       <#if !bHasInternalAuth || (bHasInternalAuth && lostPasswordUrl??)>
