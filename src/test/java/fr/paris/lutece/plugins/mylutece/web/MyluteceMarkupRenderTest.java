@@ -78,15 +78,18 @@ public class MyluteceMarkupRenderTest
 
     /** The core macros the templates call, written as stand-ins: nested content only, or an element with the argument. */
     private static final String [ ] MACROS_NESTED = {
-            "cTpl", "cRow", "cCol", "cForm", "cCard", "cField", "cBtn", "cIcon", "cLink", "cImg", "cRadio", "cInputGroup",
+            "cTpl", "cRow", "cCol", "cForm", "cCard", "cField", "cBtn", "cIcon", "cLink", "cImg", "cInputGroup",
             "cInputGroupAddon", "cInputPassword", "cText", "cInline", "cContainer", "cTitle", "cBreadCrumb", "chList", "chItem",
-            "cDropdown", "cFieldset"
+            "cDropdown"
     };
     private static final String MACROS = "macros.ftl";
     private static final String MACROS_SOURCE = "<#macro cAlert title='' rest...><div role=\"alert\">${title}<#nested></div></#macro>"
             + "<#macro cBlock rest...><div><#nested></div></#macro>" + "<#macro cInput value='' rest...><input value=\"${value}\"></#macro>"
             + "<#macro formGroup labelKey='' rest...><div class=\"form-group\"><label>${labelKey}</label><#nested></div></#macro>"
-            + "<#macro input value='' rest...><input value=\"${value}\"></#macro>";
+            + "<#macro input value='' rest...><input value=\"${value}\"></#macro>"
+            + "<#macro cRadio name label value='' checked=false rest...><input type=\"radio\" name=\"${name}\" value=\"${value}\"<#if checked> checked</#if>>${label}</#macro>"
+            + "<#macro cFieldset legend='' errorMsg='' rest...><fieldset<#if errorMsg?has_content> aria-describedby=\"error_group\"</#if>><legend>${legend}</legend>"
+            + "<#if errorMsg?has_content><div id=\"error_group\">${errorMsg}</div></#if><#nested></fieldset></#macro>";
 
     private static final String CAPTCHA = "<div class=\"captcha\"><img src=\"jcaptcha.jpg\" alt=\"Captcha\"><input name=\"j_captcha_response\"></div>";
     private static final String HOSTILE = "a <b>x</b> \"q\" <script>alert(1)</script>";
@@ -215,6 +218,77 @@ public class MyluteceMarkupRenderTest
         assertTrue( strHtml.contains( CAPTCHA ), strHtml );
         assertTrue( strHtml.contains( HOSTILE_ESCAPED ), strHtml );
         assertFalse( strHtml.contains( "<script>" ), strHtml );
+    }
+
+    /**
+     * @return the authentications of a site with the database authentication and a delegated one (OpenID Connect)
+     */
+    private static List<Map<String, Object>> databaseAndDelegatedAuthentications( )
+    {
+        return List.of( Map.of( "name", "mylutece-database", "authServiceName", "Database", "externalAuthentication", false,
+                "delegatedAuthentication", false ), Map.of( "name", "mylutece-openid", "authServiceName", "OpenID Connect", "externalAuthentication",
+                false, "delegatedAuthentication", true, "iconUrl", "images/openid.png" ) );
+    }
+
+    /**
+     * With several authentications, the multi-authentication login form checks the login/password authentication by
+     * default: a user who fills the login and the password and submits does not get the "select an authentication mode"
+     * error.
+     *
+     * @throws Exception
+     *             if the rendering fails
+     */
+    @Test
+    public void testMultiLoginFormChecksTheFirstProviderByDefault( ) throws Exception
+    {
+        Map<String, Object> model = loginModel( );
+        model.remove( "error_message" );
+        model.remove( "error_detail" );
+        model.put( "list_authentications", databaseAndDelegatedAuthentications( ) );
+
+        String strHtml = render( TEMPLATE_LOGIN_FORM_MULTI, model );
+
+        assertTrue( strHtml.contains( "<fieldset><legend>#i18n{mylutece.xpage.login_form.labelAuthProvider}</legend>" ), strHtml );
+        assertTrue( strHtml.contains( "<input type=\"radio\" name=\"auth_provider\" value=\"mylutece-database\" checked>" ), strHtml );
+    }
+
+    /**
+     * The provider given in the request stays checked, the other ones are not.
+     *
+     * @throws Exception
+     *             if the rendering fails
+     */
+    @Test
+    public void testMultiLoginFormChecksTheRequestedProvider( ) throws Exception
+    {
+        Map<String, Object> model = loginModel( );
+        model.put( "auth_provider", "mylutece-other" );
+        model.put( "list_authentications", List.of( Map.of( "name", "mylutece-database", "authServiceName", "Database", "externalAuthentication",
+                false, "delegatedAuthentication", false ), Map.of( "name", "mylutece-other", "authServiceName", "Other", "externalAuthentication",
+                false, "delegatedAuthentication", false ) ) );
+
+        String strHtml = render( TEMPLATE_LOGIN_FORM_MULTI, model );
+
+        assertTrue( strHtml.contains( "<input type=\"radio\" name=\"auth_provider\" value=\"mylutece-database\">" ), strHtml );
+        assertTrue( strHtml.contains( "<input type=\"radio\" name=\"auth_provider\" value=\"mylutece-other\" checked>" ), strHtml );
+    }
+
+    /**
+     * A login refused because no provider was sent shows the error on the radio group, tied to its fieldset.
+     *
+     * @throws Exception
+     *             if the rendering fails
+     */
+    @Test
+    public void testMultiLoginFormTiesTheMissingProviderErrorToTheGroup( ) throws Exception
+    {
+        Map<String, Object> model = loginModel( );
+        model.put( "list_authentications", databaseAndDelegatedAuthentications( ) );
+
+        String strHtml = render( TEMPLATE_LOGIN_FORM_MULTI, model );
+
+        assertTrue( strHtml.contains( "<fieldset aria-describedby=\"error_group\"><legend>#i18n{mylutece.xpage.login_form.labelAuthProvider}</legend>"
+                + "<div id=\"error_group\">#i18n{mylutece.message.noAuthenticationSelected}</div>" ), strHtml );
     }
 
     /**

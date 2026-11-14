@@ -38,9 +38,15 @@
         <#assign internalAuthentications = list_authentications?filter( a -> !a.externalAuthentication && !a.delegatedAuthentication ) />
         <#if internalAuthentications?has_content>
           <#assign bHasInternalAuth = true />
-          <@cFieldset legend='#i18n{mylutece.xpage.login_form.labelAuthProvider}'>
+          <#-- the provider of the request when it is one of the list, the first one otherwise: one radio is always checked -->
+          <#assign checkedProvider = internalAuthentications?first.name />
           <#list internalAuthentications as authentication>
-            <@cRadio name='auth_provider' label='${authentication.authServiceName}' value='${authentication.name}' checked=(auth_provider?has_content && auth_provider == authentication.name) />
+            <#if auth_provider?has_content && auth_provider == authentication.name><#assign checkedProvider = authentication.name /></#if>
+          </#list>
+          <#-- a login refused without provider: the error is written on the radio group -->
+          <@cFieldset legend='#i18n{mylutece.xpage.login_form.labelAuthProvider}' errorMsg=( hasLoginError && !auth_provider?has_content )?then( '#i18n{mylutece.message.noAuthenticationSelected}', '' )>
+          <#list internalAuthentications as authentication>
+            <@cRadio name='auth_provider' label='${authentication.authServiceName}' value='${authentication.name}' checked=( authentication.name == checkedProvider ) />
           </#list>
           </@cFieldset>
         </#if>
