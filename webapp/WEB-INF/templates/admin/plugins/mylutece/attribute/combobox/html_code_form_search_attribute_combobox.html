@@ -22,7 +22,7 @@
 <#assign multiple = 0 />
 </#if>
 	<@select name='attribute_${attribute.idAttribute}' id='attribute_${attribute.idAttribute}' multiple=multiple>
-		<#if !isMultiple( attribute.listAttributeFields )><option value="">#i18n{portal.users.attribute.comboBox.labelAll}</option></#if>
+		<#if !isMultiple( attribute.listAttributeFields )><option value="">#i18n{mylutece.attribute.comboBox.labelAll}</option></#if>
 		<#list attribute.listAttributeFields as attributeField><#if attributeField.title?exists && attributeField.value != ""><option value="${attributeField.idField}"<#if default_values_list?has_content && isSelected( attributeField.idField,default_values_list ) > selected="selected"</#if>>${attributeField.title}</option></#if></#list>
 	</@select>
 </@formGroup>
