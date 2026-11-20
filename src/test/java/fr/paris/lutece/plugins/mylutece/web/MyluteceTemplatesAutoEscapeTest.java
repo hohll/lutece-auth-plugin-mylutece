@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.web;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -138,6 +139,15 @@ public class MyluteceTemplatesAutoEscapeTest
      * @throws IOException
      *             if a template cannot be read
      */
+    @Test
+    public void testLoginFormGivesNoPasswordPolicy( ) throws IOException
+    {
+        // The login form asks for an existing password: a policy of new passwords there is misleading (and was not the one checked)
+        String strTemplate = Files.readString( Path.of( TEMPLATES_ROOT, "skin/plugins/mylutece/login_form_multi.html" ), StandardCharsets.UTF_8 );
+
+        assertFalse( strTemplate.contains( "labelPasswordHelp" ), "the login form shows no help of a new password" );
+    }
+
     @Test
     public void testEveryTemplateParsesWithAutoEscaping( ) throws IOException
     {

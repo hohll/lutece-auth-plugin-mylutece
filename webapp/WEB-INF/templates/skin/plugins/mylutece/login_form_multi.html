@@ -74,7 +74,7 @@
               <@cInput name='username' id='username' placeholder='name@example.com' autocomplete='username' params=hasLoginError?then({'aria-describedby': 'mylutece_login_error', 'aria-invalid': 'true'}, {}) />
           </@cInputGroup>
         </@cField> 
-        <@cInputPassword label='#i18n{mylutece.xpage.login_form.labelPassword}' name='password' icon='lock' id='password' placeholder='#i18n{mylutece.xpage.login_form.labelPassword}' helpMsg='#i18n{portal.theme.labelPasswordHelp}' autocomplete='current-password' params=hasLoginError?then({'aria-describedby': 'mylutece_login_error', 'aria-invalid': 'true'}, {}) />
+        <@cInputPassword label='#i18n{mylutece.xpage.login_form.labelPassword}' name='password' icon='lock' id='password' placeholder='#i18n{mylutece.xpage.login_form.labelPassword}' autocomplete='current-password' params=hasLoginError?then({'aria-describedby': 'mylutece_login_error', 'aria-invalid': 'true'}, {}) />
         <#if is_active_captcha>${captcha}</#if>
         <@cBtn class='primary' type='submit' label='#i18n{mylutece.xpage.login_form.labelButton}' nestedPos='after'>
           <@cIcon name='arrow-right' class='ms-2' />
