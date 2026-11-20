@@ -337,12 +337,17 @@ public class MyLuteceApp implements XPageApplication
         }
         catch( FailedLoginException ex )
         {
-            // Creating a record of connections log
-            ConnectionLog connectionLog = new ConnectionLog( );
-            connectionLog.setIpAddress( SecurityUtil.getRealIp( request ) );
-            connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
-            connectionLog.setLoginStatus( ConnectionLog.LOGIN_DENIED ); // will be inserted only if access denied
-            ConnectionLogHome.addUserLog( connectionLog, plugin );
+            // Creating a record of connections log, with the login typed: the failures are counted per address and per login. A refusal
+            // because of a lock is not a new failure: logging it would extend the lock as long as attempts go on
+            if ( !Boolean.TRUE.equals( request.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ) ) )
+            {
+                ConnectionLog connectionLog = new ConnectionLog( );
+                connectionLog.setIpAddress( SecurityUtil.getRealIp( request ) );
+                connectionLog.setLogin( StringUtils.left( strUsername, 100 ) );
+                connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+                connectionLog.setLoginStatus( ConnectionLog.LOGIN_DENIED ); // will be inserted only if access denied
+                ConnectionLogHome.addUserLog( connectionLog, plugin );
+            }
 
             strReturn += ( "&" + PARAMETER_ERROR + "=" + PARAMETER_ERROR_VALUE_INVALID );
 

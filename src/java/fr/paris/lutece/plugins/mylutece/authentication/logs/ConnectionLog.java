@@ -43,7 +43,14 @@ public class ConnectionLog
     public static final int LOGIN_OK = 10;
     public static final int LOGIN_DENIED = 0;
     public static final int LOGIN_DENIED_CANCELED = 5;
+
+    /**
+     * Name of the request attribute set by an authentication module when it refuses a login because the address or the login is locked after
+     * too many failures: such a refusal is not logged as a new failure, so that it does not extend the lock
+     */
+    public static final String ATTRIBUTE_LOGIN_LOCKED = "mylutece.login.locked";
     private String _strIpAddress;
+    private String _strLogin;
     private java.sql.Timestamp _dateLogin;
     private int _nLoginStatus;
 
@@ -108,5 +115,26 @@ public class ConnectionLog
     public void setLoginStatus( int nLoginStatus )
     {
         _nLoginStatus = nLoginStatus;
+    }
+
+    /**
+     * Returns the login typed in the connection attempt
+     *
+     * @return the login, or null
+     */
+    public String getLogin( )
+    {
+        return _strLogin;
+    }
+
+    /**
+     * Sets the login typed in the connection attempt
+     *
+     * @param strLogin
+     *            the login
+     */
+    public void setLogin( String strLogin )
+    {
+        _strLogin = strLogin;
     }
 }

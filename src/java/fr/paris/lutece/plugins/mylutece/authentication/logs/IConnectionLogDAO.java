@@ -67,6 +67,19 @@ public interface IConnectionLogDAO
     int selectLoginErrors( ConnectionLog connectionLog, int nIntervalMinutes, Plugin plugin );
 
     /**
+     * Calculate the number of failed connections with a given login during the last minutes, whatever the ip address
+     * 
+     * @param connectionLog
+     *            The Log of connection, holding the login
+     * @param nIntervalMinutes
+     *            The number of minutes
+     * @param plugin
+     *            The plugin
+     * @return The number of login errors of this login during the last <i>nIntervalMinutes</i> minutes
+     */
+    int selectLoginErrorsByLogin( ConnectionLog connectionLog, int nIntervalMinutes, Plugin plugin );
+
+    /**
      * Update connection logs of an IP to allow the user to login.
      * 
      * @param strIp

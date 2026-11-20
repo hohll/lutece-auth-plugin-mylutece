@@ -101,4 +101,20 @@ public final class ConnectionLogHome
     {
         _dao.resetConnectionLogs( strIp, dateLogin, nIntervalMinutes, plugin );
     }
+
+    /**
+     * Calculate the number of failed connections with a given login during the last minutes, whatever the ip address
+     * 
+     * @param connectionLog
+     *            the ConnectionLog object, holding the login
+     * @param nIntervalMinutes
+     *            The number of minutes
+     * @param plugin
+     *            The plugin
+     * @return the number of failed connections of this login
+     */
+    public static int getLoginErrorsByLogin( ConnectionLog connectionLog, int nIntervalMinutes, Plugin plugin )
+    {
+        return _dao.selectLoginErrorsByLogin( connectionLog, nIntervalMinutes, plugin );
+    }
 }

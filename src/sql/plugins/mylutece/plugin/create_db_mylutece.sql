@@ -60,5 +60,6 @@ DROP TABLE IF EXISTS mylutece_connections_log;
 CREATE TABLE mylutece_connections_log (
 	ip_address varchar(63) default NULL,
 	date_login timestamp default CURRENT_TIMESTAMP NOT NULL,
-	login_status int default NULL
+	login_status int default NULL,
+	login varchar(100) default NULL
 );

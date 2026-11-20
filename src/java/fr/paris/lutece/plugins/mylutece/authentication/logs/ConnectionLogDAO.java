@@ -50,8 +50,10 @@ public final class ConnectionLogDAO implements IConnectionLogDAO
     // Constants
     private static final String SQL_QUERY_SELECT_LOGIN_ERRORS = " SELECT COUNT(*) FROM mylutece_connections_log  WHERE ip_address = ? AND login_status = ? "
             + " AND date_login > ? AND date_login < ? ";
-    private static final String SQL_QUERY_INSERT_LOGS = " INSERT INTO mylutece_connections_log ( ip_address, date_login, login_status ) "
-            + " VALUES ( ?, ?, ? )";
+    private static final String SQL_QUERY_SELECT_LOGIN_ERRORS_BY_LOGIN = " SELECT COUNT(*) FROM mylutece_connections_log WHERE login = ? AND login_status = ? "
+            + " AND date_login > ? AND date_login < ? ";
+    private static final String SQL_QUERY_INSERT_LOGS = " INSERT INTO mylutece_connections_log ( ip_address, date_login, login_status, login ) "
+            + " VALUES ( ?, ?, ?, ? )";
     private static final String SQL_UPDATE_CLEAR_LOGS = " UPDATE mylutece_connections_log SET login_status = ? WHERE ip_address = ? AND date_login > ? AND date_login < ? ";
 
     /**
@@ -60,13 +62,40 @@ public final class ConnectionLogDAO implements IConnectionLogDAO
     @Override
     public int selectLoginErrors( ConnectionLog connectionLog, int nIntervalMinutes, Plugin plugin )
     {
+        return countLoginErrors( SQL_QUERY_SELECT_LOGIN_ERRORS, connectionLog.getIpAddress( ), nIntervalMinutes, plugin );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int selectLoginErrorsByLogin( ConnectionLog connectionLog, int nIntervalMinutes, Plugin plugin )
+    {
+        return countLoginErrors( SQL_QUERY_SELECT_LOGIN_ERRORS_BY_LOGIN, connectionLog.getLogin( ), nIntervalMinutes, plugin );
+    }
+
+    /**
+     * Count the failed connections of an ip address or of a login during the last minutes
+     *
+     * @param strQuery
+     *            the query
+     * @param strValue
+     *            the ip address or the login
+     * @param nIntervalMinutes
+     *            the number of minutes
+     * @param plugin
+     *            the plugin
+     * @return the number of failed connections
+     */
+    private static int countLoginErrors( String strQuery, String strValue, int nIntervalMinutes, Plugin plugin )
+    {
         int nCount = 0;
         java.sql.Timestamp dateEnd = new java.sql.Timestamp( new java.util.Date( ).getTime( ) );
-        java.sql.Timestamp dateBegin = new java.sql.Timestamp( dateEnd.getTime( ) - ( nIntervalMinutes * 1000 * 60 ) );
+        java.sql.Timestamp dateBegin = new java.sql.Timestamp( dateEnd.getTime( ) - ( nIntervalMinutes * 1000L * 60L ) );
 
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_LOGIN_ERRORS, plugin ) )
+        try( DAOUtil daoUtil = new DAOUtil( strQuery, plugin ) )
         {
-            daoUtil.setString( 1, connectionLog.getIpAddress( ) );
+            daoUtil.setString( 1, strValue );
             daoUtil.setInt( 2, ConnectionLog.LOGIN_DENIED );
             daoUtil.setTimestamp( 3, dateBegin );
             daoUtil.setTimestamp( 4, dateEnd );
@@ -93,6 +122,7 @@ public final class ConnectionLogDAO implements IConnectionLogDAO
             daoUtil.setString( 1, connectionLog.getIpAddress( ) );
             daoUtil.setTimestamp( 2, connectionLog.getDateLogin( ) );
             daoUtil.setInt( 3, connectionLog.getLoginStatus( ) );
+            daoUtil.setString( 4, connectionLog.getLogin( ) );
     
             daoUtil.executeUpdate( );
         }
