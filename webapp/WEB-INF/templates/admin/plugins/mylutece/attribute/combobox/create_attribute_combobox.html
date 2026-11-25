@@ -1,31 +1,36 @@
+<#include '/admin/plugins/mylutece/macro_mylutece_admin.html' />
+<#assign bc><@myluteceBreadcrumb current='#i18n{mylutece.create_attribute.pageTitleAttributeComboBox}' /></#assign>
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.create_attribute.pageTitleAttributeComboBox}' />
-			<@tform method='post' action='jsp/admin/plugins/mylutece/attribute/DoCreateAttribute.jsp' boxed=true>
-				<@formGroup labelFor='title' labelKey='#i18n{mylutece.create_attribute.labelTitle}' helpKey='#i18n{mylutece.create_attribute.labelTitleComment}' mandatory=true>
-					<@input type='text' name='title' id='title' inputSize=80 value=''  maxlength=255 />
-				</@formGroup>
-				<@formGroup labelFor='help_message' labelKey='#i18n{mylutece.create_attribute.labelHelpMessage}' helpKey='#i18n{mylutece.create_attribute.labelHelpMessageComment}'>
-					<@input type='textarea' name='help_message' id='help_message' cols=80 rows=5></@input>
-				</@formGroup>
-				<@formGroup labelKey='#i18n{mylutece.create_attribute.labelType}'>
-					<@staticText><@tag color='info'>${attribute_type.name}</@tag></@staticText>
-				</@formGroup>
-				<@formGroup>
-					<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelIsShownInSearch}' name='is_shown_in_search' id='is_shown_in_search' value='1' />
-				</@formGroup>
-				<@formGroup>
-					<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelMandatory}' name='mandatory' id='mandatory' value='1' />
-				</@formGroup>
-				<@formGroup labelFor='multiple' helpKey='#i18n{mylutece.create_attribute.labelMultipleComment}'>
-					<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelMultiple}' name='multiple' id='multiple' value='1' params={ 'aria-describedby': 'help_multiple' } />
-				</@formGroup>
-				<@formGroup>
-					<@input type='hidden' name='attribute_type_class_name' value='${attribute_type.className}' />
-					<@button type='submit' name='validate' value='validate' title='#i18n{mylutece.create_attribute.buttonValidate}' buttonIcon='check' />
-					<@button type='submit' name='apply' value='apply' title='#i18n{mylutece.create_attribute.buttonApply}' buttonIcon='check' />
-					<@button type='submit' name='cancel' value='cancel' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' cancel=true />
-				</@formGroup>
-			</@tform>
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.create_attribute.pageTitleAttributeComboBox}' breadcrumb=bc>
+			<@aButton href='jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' hideTitle=['xs','sm','md'] class='me-1' />
+		</@myluteceHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
+		<@tform method='post' action='jsp/admin/plugins/mylutece/attribute/DoCreateAttribute.jsp' boxed=true>
+			<@formGroup labelFor='title' labelKey='#i18n{mylutece.create_attribute.labelTitle}' helpKey='#i18n{mylutece.create_attribute.labelTitleComment}' mandatory=true rows=2>
+				<@input type='text' name='title' id='title' inputSize=80 value='' maxlength=255 mandatory=true />
+			</@formGroup>
+			<@formGroup labelFor='help_message' labelKey='#i18n{mylutece.create_attribute.labelHelpMessage}' helpKey='#i18n{mylutece.create_attribute.labelHelpMessageComment}' rows=2>
+				<@input type='textarea' name='help_message' id='help_message' cols=80 rows=5></@input>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{mylutece.create_attribute.labelType}' rows=2>
+				<@staticText><@tag color='info'>${attribute_type.name}</@tag></@staticText>
+			</@formGroup>
+			<@formGroup rows=2>
+				<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelIsShownInSearch}' name='is_shown_in_search' id='is_shown_in_search' value='1' />
+			</@formGroup>
+			<@formGroup rows=2>
+				<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelMandatory}' name='mandatory' id='mandatory' value='1' />
+			</@formGroup>
+			<@formGroup labelFor='multiple' helpKey='#i18n{mylutece.create_attribute.labelMultipleComment}' rows=2>
+				<@checkBox orientation='switch' labelKey='#i18n{mylutece.create_attribute.labelMultiple}' name='multiple' id='multiple' value='1' params={ 'aria-describedby': 'help_multiple' } />
+			</@formGroup>
+			<@formGroup rows=2>
+				<@input type='hidden' name='attribute_type_class_name' value='${attribute_type.className}' />
+				<@button type='submit' name='validate' value='validate' color='primary' buttonIcon='check' title='#i18n{mylutece.create_attribute.buttonValidate}' />
+				<@button type='submit' name='apply' value='apply' color='light' buttonIcon='device-floppy' title='#i18n{mylutece.create_attribute.buttonApply}' />
+				<@button type='submit' name='cancel' value='cancel' color='light' buttonIcon='x' title='#i18n{portal.util.labelCancel}' params={ 'formnovalidate': 'formnovalidate' } />
+			</@formGroup>
+		</@tform>
 	</@pageColumn>
 </@pageContainer>

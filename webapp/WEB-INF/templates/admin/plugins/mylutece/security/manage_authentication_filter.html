@@ -1,10 +1,12 @@
+<#include "/admin/plugins/mylutece/macro_mylutece_admin.html" />
 <#include "authentication_filter_advanced_parameters.html" />
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.authentication_filter_advanced_parameters.tableLabel}'>
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.authentication_filter_advanced_parameters.tableLabel}' iconName='shield-cog'>
 			<@myluteceAuthFilterAdvParamsSearch />
 			<@myluteceAuthFilterAdvParamsFormActions />
-		</@pageHeader>
+		</@myluteceHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@myluteceAuthFilterAdvParamsMainForm />
 	</@pageColumn>
 </@pageContainer>

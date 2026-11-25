@@ -1,20 +1,25 @@
+<#include '/admin/plugins/mylutece/macro_mylutece_admin.html' />
+<#assign bc><@myluteceBreadcrumb current='#i18n{mylutece.create_attribute_field.pageTitle}' /></#assign>
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.create_attribute_field.pageTitle} : \'${attribute.title}\'' />
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.create_attribute_field.pageTitle} : ${attribute.title}' breadcrumb=bc>
+			<@aButton href='jsp/admin/plugins/mylutece/attribute/ModifyAttribute.jsp?id_attribute=${attribute.idAttribute}' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' hideTitle=['xs','sm','md'] />
+		</@myluteceHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform action='jsp/admin/plugins/mylutece/attribute/DoCreateAttributeField.jsp#list' method='post' boxed=true>
-			<@formGroup labelFor='title' labelKey='#i18n{mylutece.create_attribute_field.labelTitle}' mandatory=true>
-				<@input type='text' name='title' id='title' inputSize=80 value='' maxlength=255 />
+			<@formGroup labelFor='title' labelKey='#i18n{mylutece.create_attribute_field.labelTitle}' mandatory=true rows=2>
+				<@input type='text' name='title' id='title' inputSize=80 value='' maxlength=255 mandatory=true />
 			</@formGroup>
-			<@formGroup labelFor='value' labelKey='#i18n{mylutece.create_attribute_field.labelValue}' mandatory=true>
-				<@input type='text' name='value' id='value' inputSize=80 value='' />
+			<@formGroup labelFor='value' labelKey='#i18n{mylutece.create_attribute_field.labelValue}' mandatory=true rows=2>
+				<@input type='text' name='value' id='value' inputSize=80 value='' mandatory=true />
 			</@formGroup>
-			<@formGroup labelKey='#i18n{mylutece.create_attribute_field.labelDefaultValue}'>
-				<@checkBox orientation='switch' labelFor='default_value' name='default_value' id='default_value' value='1' />
+			<@formGroup rows=2>
+				<@checkBox orientation='switch' labelFor='default_value' labelKey='#i18n{mylutece.create_attribute_field.labelDefaultValue}' name='default_value' id='default_value' value='1' />
 			</@formGroup>
-			<@formGroup>
+			<@formGroup rows=2>
 				<@input type='hidden' value='${attribute.idAttribute}' name='id_attribute' />
-				<@button type='submit' name='save' value='#i18n{mylutece.create_attribute_field.buttonSave}' title='#i18n{mylutece.create_attribute_field.buttonSave}' buttonIcon='check' />
-				<@button type='submit' name='cancel' value='#i18n{portal.admin.message.buttonCancel}' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' cancel=true />
+				<@button type='submit' name='save' value='save' color='primary' buttonIcon='check' title='#i18n{mylutece.create_attribute_field.buttonSave}' />
+				<@button type='submit' name='cancel' value='cancel' color='light' buttonIcon='x' title='#i18n{portal.util.labelCancel}' params={ 'formnovalidate': 'formnovalidate' } />
 			</@formGroup>
 		</@tform>
 	</@pageColumn>

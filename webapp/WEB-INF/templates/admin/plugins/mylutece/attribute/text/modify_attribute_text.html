@@ -1,52 +1,53 @@
+<#include '/admin/plugins/mylutece/macro_mylutece_admin.html' />
+<#assign bc><@myluteceBreadcrumb current='#i18n{mylutece.modify_attribute.pageTitleAttributeText}' /></#assign>
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.modify_attribute.pageTitleAttributeText}' />
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.modify_attribute.pageTitleAttributeText}' breadcrumb=bc>
+			<@aButton href='jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' hideTitle=['xs','sm','md'] class='me-1' />
+		</@myluteceHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform method='post' action='jsp/admin/plugins/mylutece/attribute/DoModifyAttribute.jsp' boxed=true>
-			<@fieldSet legend='#i18n{mylutece.modify_attribute.pageTitleAttributeText}' hideLegend=['all']>
-				<@formGroup labelFor='title' labelKey='#i18n{mylutece.modify_attribute.labelTitle}' helpKey='#i18n{mylutece.modify_attribute.labelTitleComment}' mandatory=true>
-					<@input type='text' name='title' id='title' inputSize=80 value='${attribute.title}' maxlength=255 />
-				</@formGroup>
-				<@formGroup labelFor='help_message' labelKey='#i18n{mylutece.modify_attribute.labelHelpMessage}' helpKey='#i18n{mylutece.modify_attribute.labelHelpMessageComment}'>
-					<@input type='textarea' name='help_message' id='help_message' cols=80 rows=5>${attribute.helpMessage}</@input>
-				</@formGroup>
-				<@formGroup labelFor='value' labelKey='#i18n{mylutece.create_attribute.labelDefaultValue}'>
-					<#list attribute_fields_list as attribute_field>
-						<@input type='text' name='value' id='value' inputSize=80 value='${attribute_field.value}' />
-					</#list>
-				</@formGroup>
-				<@formGroup labelKey='#i18n{mylutece.modify_attribute.labelType}'>
-					<@staticText>
-						<@tag color='info'>${attribute.attributeType.name}</@tag>
-					</@staticText>
-				</@formGroup>
-				<@formGroup>
-					<@checkBox orientation='switch' labelFor='is_shown_in_search' labelKey='#i18n{mylutece.modify_attribute.labelIsShownInSearch}' name='is_shown_in_search' id='is_shown_in_search' value='1' checked=attribute.shownInSearch />
-				</@formGroup>
-				<@formGroup>
-					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{mylutece.modify_attribute.labelMandatory}' name='mandatory' id='mandatory' checked=attribute.mandatory />
-				</@formGroup>
-				<@formGroup labelFor='width' labelKey='#i18n{mylutece.modify_attribute.labelWidth}' mandatory=true>
+			<@formGroup labelFor='title' labelKey='#i18n{mylutece.modify_attribute.labelTitle}' helpKey='#i18n{mylutece.modify_attribute.labelTitleComment}' mandatory=true rows=2>
+				<@input type='text' name='title' id='title' inputSize=80 value='${attribute.title}' maxlength=255 mandatory=true />
+			</@formGroup>
+			<@formGroup labelFor='help_message' labelKey='#i18n{mylutece.modify_attribute.labelHelpMessage}' helpKey='#i18n{mylutece.modify_attribute.labelHelpMessageComment}' rows=2>
+				<@input type='textarea' name='help_message' id='help_message' cols=80 rows=5>${attribute.helpMessage}</@input>
+			</@formGroup>
+			<@formGroup labelFor='value' labelKey='#i18n{mylutece.create_attribute.labelDefaultValue}' rows=2>
 				<#list attribute_fields_list as attribute_field>
-					<@input type='text' name='width' id='width' inputSize=5 value='${attribute_field.width}' />
+					<@input type='text' name='value' id='value' inputSize=80 value='${attribute_field.value}' />
 				</#list>
-				</@formGroup>
-				<@formGroup labelFor='max_size_enter' labelKey='#i18n{mylutece.modify_attribute.labelMaxSizeEnter}'>
-					<#list attribute_fields_list as attribute_field>
-						<#if attribute_field.maxSizeEnter != -1>
-							<#assign inputValue = attribute_field.maxSizeEnter />
-						<#else>
-							<#assign inputValue = '' />
-						</#if>
-						<@input type='text' name='max_size_enter' id='max_size_enter' inputSize=5 value=inputValue />
-					</#list>
-				</@formGroup>
-				<@formGroup>
-					<@input type='hidden' name='id_attribute' value='${attribute.idAttribute}' />
-					<@button type='submit' name='validate' value='validate' title='#i18n{mylutece.modify_attribute.buttonValidate}' buttonIcon='check' />
-					<@button type='submit' name='apply' value='apply' title='#i18n{mylutece.modify_attribute.buttonApply}' buttonIcon='check' />
-					<@button type='submit' name='cancel' value='cancel' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' cancel=true />
-				</@formGroup>
-			</@fieldSet>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{mylutece.modify_attribute.labelType}' rows=2>
+				<@staticText><@tag color='info'>${attribute.attributeType.name}</@tag></@staticText>
+			</@formGroup>
+			<@formGroup rows=2>
+				<@checkBox orientation='switch' labelKey='#i18n{mylutece.modify_attribute.labelIsShownInSearch}' name='is_shown_in_search' id='is_shown_in_search' value='1' checked=attribute.shownInSearch />
+			</@formGroup>
+			<@formGroup rows=2>
+				<@checkBox orientation='switch' labelKey='#i18n{mylutece.modify_attribute.labelMandatory}' name='mandatory' id='mandatory' value='1' checked=attribute.mandatory />
+			</@formGroup>
+			<@formGroup labelFor='width' labelKey='#i18n{mylutece.modify_attribute.labelWidth}' mandatory=true rows=2>
+				<#list attribute_fields_list as attribute_field>
+					<@input type='text' name='width' id='width' inputSize=5 value='${attribute_field.width}' mandatory=true />
+				</#list>
+			</@formGroup>
+			<@formGroup labelFor='max_size_enter' labelKey='#i18n{mylutece.modify_attribute.labelMaxSizeEnter}' rows=2>
+				<#list attribute_fields_list as attribute_field>
+					<#if attribute_field.maxSizeEnter != -1>
+						<#assign inputValue = attribute_field.maxSizeEnter />
+					<#else>
+						<#assign inputValue = '' />
+					</#if>
+					<@input type='text' name='max_size_enter' id='max_size_enter' inputSize=5 value=inputValue />
+				</#list>
+			</@formGroup>
+			<@formGroup rows=2>
+				<@input type='hidden' name='id_attribute' value='${attribute.idAttribute}' />
+				<@button type='submit' name='validate' value='validate' color='primary' buttonIcon='check' title='#i18n{mylutece.modify_attribute.buttonValidate}' />
+				<@button type='submit' name='apply' value='apply' color='light' buttonIcon='device-floppy' title='#i18n{mylutece.modify_attribute.buttonApply}' />
+				<@button type='submit' name='cancel' value='cancel' color='light' buttonIcon='x' title='#i18n{portal.util.labelCancel}' params={ 'formnovalidate': 'formnovalidate' } />
+			</@formGroup>
 		</@tform>
 	</@pageColumn>
 </@pageContainer>

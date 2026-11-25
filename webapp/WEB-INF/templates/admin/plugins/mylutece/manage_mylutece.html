@@ -1,74 +1,98 @@
+<#include '/admin/plugins/mylutece/macro_mylutece_admin.html' />
 <#include 'managemylutece_tabs.html' />
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.manage_mylutece.title}' />
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.manage_mylutece.title}' />
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tabs2 tab='manageMylutece'>
 			<@h level=2>#i18n{mylutece.manage_mylutece.authenticationServiceTitle}</@h>
 			<#if authentication?has_content>
 				<#if authentication.isMultiAuthenticationSupported()>
 					<#if authentication.getListLuteceAuthentication()?has_content>
 						<#list authentication.listLuteceAuthentication as multi_authentication >
-							<@alert color='primary'><@h level=3>${authentication.getAuthServiceName()}/${multi_authentication.getAuthServiceName()}</@h></@alert>
+							<@h level=3 class='mt-3'><@icon style='shield-lock' class='me-1' />${authentication.getAuthServiceName()}/${multi_authentication.getAuthServiceName()}</@h>
 							<@displayAttributeProvidedDescription  (multi_authentication.getLuteceUserAttributesProvided(locale))!/>
 							<@displayRoleProvidedDescription map_auth_role_description[multi_authentication.authServiceName!]!/>
 						</#list>
 					</#if>
 				<#else>
-					<@alert><@h level=3>${authentication.getAuthServiceName()}</@h></@alert>
+					<@h level=3 class='mt-3'><@icon style='shield-lock' class='me-1' />${authentication.getAuthServiceName()}</@h>
 					<@displayAttributeProvidedDescription  (authentication.getLuteceUserAttributesProvided(locale))!/>
 					<@displayRoleProvidedDescription map_auth_role_description[authentication.authServiceName!]!/>
 				</#if>
 			</#if>
-			<@alert color='primary'><@h level=2>#i18n{mylutece.manage_mylutece.externalIdentityProvider.title}</@h></@alert>
+			<@h level=2 class='mt-4'>#i18n{mylutece.manage_mylutece.externalIdentityProvider.title}</@h>
 			<#if external_identity_providers?has_content>
 				<#list external_identity_providers as identity_provider>
 					<@displayAttributeProvidedDescription  (identity_provider.getLuteceUserAttributesProvided(locale))!/>
 				</#list>
+			<#else>
+				<@card><@empty title='#i18n{portal.util.labelNoItem}' iconName='plug-off' subtitle=' ' /></@card>
 			</#if>
-			<@alert color='primary'><@h level=2>#i18n{mylutece.manage_mylutece.externalRoleProvider.title} </@h></@alert>
+			<@h level=2 class='mt-4'>#i18n{mylutece.manage_mylutece.externalRoleProvider.title}</@h>
 			<#if external_roles_providers?has_content>
 				<#list external_roles_providers as role_provider>
 					<@displayRoleProvidedDescription map_external_provider_role_description["${role_provider?index}"]!/>
 				</#list>
+			<#else>
+				<@card><@empty title='#i18n{portal.util.labelNoItem}' iconName='plug-off' subtitle=' ' /></@card>
 			</#if>
 		</@tabs2>
 	</@pageColumn>
 </@pageContainer>
 <#macro displayAttributeProvidedDescription listAttributeDescription >
 <@box>
-	<@boxHeader title='#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.tableTitle}' boxTools=true />
-	<@boxBody>
-		<@manageFeature>
-			<#if listAttributeDescription?has_content >
+	<@boxHeader title='#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.tableTitle}' />
+	<#if listAttributeDescription?has_content >
+		<@table class='table-vcenter card-table mb-0'>
+			<@tableHead>
+				<@tr>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.attributeKey}</@th>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.mappingKey}</@th>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.mappingDescription}</@th>
+				</@tr>
+			</@tableHead>
+			<@tableBody>
 				<#list listAttributeDescription as attribute_description >
-					<@manageFeatureItem >
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.attributeKey} : ${attribute_description.attributeKey!''}</@manageFeatureItemColumn>
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.mappingKey} : ${attribute_description.mappingKey!''} </@manageFeatureItemColumn>
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceAttibuteDescriptionTable.mappingDescription} : ${attribute_description.description!''} </@manageFeatureItemColumn>
-					</@manageFeatureItem >
+					<@tr>
+						<@td class='fw-semibold'>${attribute_description.attributeKey!''}</@td>
+						<@td>${attribute_description.mappingKey!''}</@td>
+						<@td class='text-secondary'>${attribute_description.description!''}</@td>
+					</@tr>
 				</#list>
-			 </#if>
-		</@manageFeature>
-	</@boxBody>
+			</@tableBody>
+		</@table>
+	<#else>
+		<@empty title='#i18n{portal.util.labelNoItem}' iconName='inbox-off' subtitle=' ' />
+	</#if>
 </@box>
 </#macro>
 <#macro displayRoleProvidedDescription listRoleDescription >
 <@box>
 	<@boxHeader title='#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.tableTitle}' />
-	<@boxBody>
-	   <@manageFeature>
-			<#if listRoleDescription?has_content >
+	<#if listRoleDescription?has_content >
+		<@table class='table-vcenter card-table mb-0'>
+			<@tableHead>
+				<@tr>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.role}</@th>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.description}</@th>
+					<@th>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.type}</@th>
+				</@tr>
+			</@tableHead>
+			<@tableBody>
 				<#list listRoleDescription as role_description >
-				  <#if role_description.role !="none">
-					<@manageFeatureItem >
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.role} : ${role_description.role!''}</@manageFeatureItemColumn>
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.description} : ${role_description.roleDescription!''} ${role_description.complementaryDescription!''} </@manageFeatureItemColumn>
-						<@manageFeatureItemColumn>#i18n{mylutece.manage_mylutece.myluteceRoleDescriptionTable.type} : ${role_description.type?lower_case!''}} </@manageFeatureItemColumn>
-					</@manageFeatureItem >
-				  </#if>
+					<#if role_description.role !="none">
+						<@tr>
+							<@td class='fw-semibold'>${role_description.role!''}</@td>
+							<@td class='text-secondary'>${role_description.roleDescription!''} ${role_description.complementaryDescription!''}</@td>
+							<@td><@tag color='' class='bg-blue-lt'>${role_description.type?lower_case!''}</@tag></@td>
+						</@tr>
+					</#if>
 				</#list>
-			</#if>
-		</@manageFeature>
-	</@boxBody>
+			</@tableBody>
+		</@table>
+	<#else>
+		<@empty title='#i18n{portal.util.labelNoItem}' iconName='inbox-off' subtitle=' ' />
+	</#if>
 </@box>
 </#macro>
