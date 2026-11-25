@@ -1,0 +1,26 @@
+<#--
+ # Shared pieces of the back office screens of MyLutece (same look as the other Tabler screens).
+ #
+ # myluteceBreadcrumb : the breadcrumb passed to the breadcrumb parameter of pageHeader
+ #   param section  'attributes' for the screens reached from the list of the attributes, empty for the main screen
+ #   param current  the label of the current screen
+ # myluteceHeader : a pageHeader preceded by the avatar of the feature; the nested content is the tools of the header
+ #   param title, iconName, color, breadcrumb
+-->
+<#macro myluteceBreadcrumb section='attributes' current=''>
+<@breadcrumbs class='mb-1'>
+	<@breadcrumbItem><@link href='jsp/admin/plugins/mylutece/ManageMylutece.jsp' label='#i18n{mylutece.adminFeature.mylutece_management.name}' linkIcon='users' /></@breadcrumbItem>
+	<#if current?has_content>
+		<@breadcrumbItem><@link href='jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp' label='#i18n{mylutece.manage_attributes.pageTitle}' /></@breadcrumbItem>
+		<@breadcrumbItem class='active' params={"aria-current": "page"}>${current}</@breadcrumbItem>
+	<#else>
+		<@breadcrumbItem class='active' params={"aria-current": "page"}>#i18n{mylutece.manage_attributes.pageTitle}</@breadcrumbItem>
+	</#if>
+</@breadcrumbs>
+</#macro>
+<#macro myluteceHeader title iconName='users' color='green' breadcrumb=''>
+<#local pageTitle><span class="avatar avatar-sm bg-${color}-lt me-2" aria-hidden="true"><@icon style=iconName /></span>${title}</#local>
+<@pageHeader title=pageTitle breadcrumb=breadcrumb>
+<#nested>
+</@pageHeader>
+</#macro>

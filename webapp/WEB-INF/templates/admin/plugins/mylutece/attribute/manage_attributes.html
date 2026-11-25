@@ -1,53 +1,64 @@
+<#include '/admin/plugins/mylutece/macro_mylutece_admin.html' />
 <#include '../managemylutece_tabs.html' />
 <@pageContainer>
-    <@pageColumn>
-		<@pageHeader title='#i18n{mylutece.manage_attributes.pageTitle}' />
+	<@pageColumn>
+		<@myluteceHeader title='#i18n{mylutece.manage_attributes.pageTitle}'>
+			<@div class='dropdown'>
+				<@aButton href='#' id='add-attribute' color='primary' class='dropdown-toggle' buttonIcon='plus' title='#i18n{mylutece.manage_attributes.addNewAttributes}' hideTitle=['xs','sm','md'] params={"data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"} />
+				<@div class='dropdown-menu dropdown-menu-end'>
+					<@div class='dropdown-header'>#i18n{mylutece.manage_attributes.addNewAttributes}</@div>
+					<#list attribute_types_list![] as attribute_type>
+						<@link href='jsp/admin/plugins/mylutece/attribute/CreateAttribute.jsp?attribute_type_class_name=${attribute_type.className?url("UTF-8")}' class='dropdown-item'>${attribute_type.name}</@link>
+					</#list>
+				</@div>
+			</@div>
+		</@myluteceHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tabs2 tab='manageAttributes'>
-			<@tform align='right' method='post' action='jsp/admin/plugins/mylutece/attribute/CreateAttribute.jsp'>
-				<@formGroup formStyle='inline' labelFor='attribute_type_class_name' labelKey='#i18n{mylutece.manage_attributes.addNewAttributes}'>
-					<@inputGroup>
-						<@select id='attribute_type_class_name' name='attribute_type_class_name' size='sm'>
-							<#list attribute_types_list as attribute_type>
-								<@option value=attribute_type.className label=attribute_type.name />
-							</#list>
-						</@select>
-						<@button type='submit' buttonIcon='plus' title='#i18n{mylutece.manage_attributes.buttonAdd}' hideTitle=['all'] size='sm' />
-					</@inputGroup>
-				</@formGroup>
-			</@tform>
-			<#if attributes_list?has_content && attributes_list?size gt 0>
-			<@manageFeature id='list'>
+			<#if attributes_list?has_content>
+			<@manageFeature layout='list' id='list'>
 			<#assign cpt = 0>
 			<#list attributes_list as attribute >
 				<#assign cpt = cpt + 1>
-					<@manageFeatureItem>
-						<@manageFeatureItemColumn auto=true>
-						${attribute.title} - ${attribute.attributeType.name} - #i18n{mylutece.manage_attributes.columnOriginalComponent} : <#if attribute.plugin?exists && attribute.plugin.name?has_content>${attribute.plugin.name}<#else>#i18n{mylutece.manage_attributes.labelMyLutece}</#if>
-						</@manageFeatureItemColumn>
-						<@manageFeatureItemColumn align='end'>
-							<#if attribute.plugin?exists && attribute.plugin.name != "">
+				<#assign provided = attribute.plugin?exists && attribute.plugin.name?has_content />
+				<@manageFeatureItem>
+					<@manageFeatureItemColumn class='d-flex align-items-center gap-2 text-truncate'>
+						<span class="avatar avatar-sm bg-green-lt" aria-hidden="true"><@icon style='forms' /></span>
+						<@div class='text-truncate'>
+							<#if !provided>
+								<@link href='jsp/admin/plugins/mylutece/attribute/ModifyAttribute.jsp?id_attribute=${attribute.idAttribute}' class='text-reset fw-semibold'>${attribute.title}</@link>
+							<#else>
+								<span class="fw-semibold">${attribute.title}</span>
+							</#if>
+							<@div class='text-secondary small text-truncate'>${attribute.attributeType.name} &middot; #i18n{mylutece.manage_attributes.columnOriginalComponent} : <#if provided>${attribute.plugin.name}<#else>#i18n{mylutece.manage_attributes.labelMyLutece}</#if></@div>
+						</@div>
+					</@manageFeatureItemColumn>
+					<@manageFeatureItemColumn auto=true align='end'>
+						<@div class='btn-actions'>
+							<@aButton href='#' id='attribute-actions-${attribute.idAttribute}' style='' color='' dropdownMenu=true buttonIcon='dots' title='#i18n{portal.util.labelActions} ${attribute.title}' hideTitle=['all']>
+								<#if !provided>
+									<@link href='jsp/admin/plugins/mylutece/attribute/ModifyAttribute.jsp?id_attribute=${attribute.idAttribute}' class='dropdown-item'><@icon style='pencil' class='me-2' />#i18n{mylutece.manage_attributes.buttonLabelModify}</@link>
+								</#if>
 								<#if cpt != 1>
-									<@aButton href='jsp/admin/plugins/mylutece/attribute/DoMoveUpAttribute.jsp?id_attribute=${attribute.idAttribute}#list' title='#i18n{mylutece.modify_attribute.buttonLabelMoveUp}' hideTitle=['all'] buttonIcon='arrow-up' size='sm' />
+									<@link href='jsp/admin/plugins/mylutece/attribute/DoMoveUpAttribute.jsp?id_attribute=${attribute.idAttribute}#list' class='dropdown-item'><@icon style='arrow-up' class='me-2' />#i18n{mylutece.modify_attribute.buttonLabelMoveUp}</@link>
 								</#if>
 								<#if attribute_has_next>
-									<@aButton href='jsp/admin/plugins/mylutece/attribute/DoMoveDownAttribute.jsp?id_attribute=${attribute.idAttribute}#list' title='#i18n{mylutece.modify_attribute.buttonLabelMoveDown}' hideTitle=['all'] buttonIcon='arrow-down' size='sm' />
+									<@link href='jsp/admin/plugins/mylutece/attribute/DoMoveDownAttribute.jsp?id_attribute=${attribute.idAttribute}#list' class='dropdown-item'><@icon style='arrow-down' class='me-2' />#i18n{mylutece.modify_attribute.buttonLabelMoveDown}</@link>
 								</#if>
-							<#else>
-								<@aButton href='jsp/admin/plugins/mylutece/attribute/ModifyAttribute.jsp?id_attribute=${attribute.idAttribute}' title='#i18n{mylutece.manage_attributes.buttonLabelModify}' hideTitle=['all'] buttonIcon='edit' size='sm' />
-								<#if cpt != 1>
-									<@aButton href='jsp/admin/plugins/mylutece/attribute/DoMoveUpAttribute.jsp?id_attribute=${attribute.idAttribute}#list' title='#i18n{mylutece.modify_attribute.buttonLabelMoveUp}' hideTitle=['all'] buttonIcon='arrow-up' size='sm' />
+								<#if !provided>
+									<@div class='dropdown-divider' />
+									<@link href='jsp/admin/plugins/mylutece/attribute/RemoveAttribute.jsp?id_attribute=${attribute.idAttribute}' class='dropdown-item text-danger'><@icon style='trash' class='me-2' />#i18n{mylutece.manage_attributes.buttonLabelDelete}</@link>
 								</#if>
-							   <#if attribute_has_next>
-								 <@aButton href='jsp/admin/plugins/mylutece/attribute/DoMoveDownAttribute.jsp?id_attribute=${attribute.idAttribute}#list' title='#i18n{mylutece.modify_attribute.buttonLabelMoveDown}' hideTitle=['all'] buttonIcon='arrow-down' size='sm' />
-							   </#if>
-								<@aButton href='jsp/admin/plugins/mylutece/attribute/RemoveAttribute.jsp?id_attribute=${attribute.idAttribute}' title='#i18n{mylutece.manage_attributes.buttonLabelDelete}' hideTitle=['all'] buttonIcon='trash' color='danger' size='sm' />
-							</#if>
-						</@manageFeatureItemColumn>
-					</@manageFeatureItem>
-				</#list>
+							</@aButton>
+						</@div>
+					</@manageFeatureItemColumn>
+				</@manageFeatureItem>
+			</#list>
 			</@manageFeature>
 			<#else>
-				<@empty />
+				<@card>
+					<@empty title='#i18n{portal.util.labelNoItem}' iconName='forms' subtitle=' ' />
+				</@card>
 			</#if>
 		</@tabs2>
 	</@pageColumn>
